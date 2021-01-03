@@ -75,7 +75,7 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
     long delay;
 
     private NetworkStateReceiver networkStateReceiver;
-
+    boolean turnNewGame = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,9 +134,10 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
                 if (ModePlay == 2) {
                     RematchNewGame = database.getReference("room/" + RoomId + "/RematchNewGame/ValueRemacth/");
                     RematchNewGame.setValue(currentUser.getUid());
-                } else {
-                    CreateNewGame();
+                    countDownTimer_GameOnline.cancel();
                 }
+
+                CreateNewGame();
             }
         });
         btnUndo.setOnClickListener(new View.OnClickListener() {
@@ -157,6 +158,7 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
                 }
                 Intent intent = new Intent(GameActivity.this,MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         if (ModePlay == 2) {
@@ -271,7 +273,10 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
         if (ModePlay == 2) {
 
             if (MoveFirst) {
-                txt_turnPlayer.setText("Your Turn (X)");
+                {
+                    txt_turnPlayer.setText("Your Turn (X)");
+                    idPlayer = 1;
+                }
             } else
                 txt_turnPlayer.setText("Competitor Turn (O)");
         }
@@ -295,12 +300,9 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
                                         RematchNewGame.setValue("Yes");
                                         DataGame = database.getReference("room/" + RoomId + "/Game");
                                         DataGame.setValue(null);
+                                        countDownTimer_GameOnline.cancel();
+                                        countDownTimer_GameOnline.start();
                                         CreateNewGame();
-                                        try {
-                                            countDownTimer_GameOnline.start();
-                                        }catch (Exception e){
-
-                                        }
                                     }
                                 })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -343,6 +345,8 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
                     }
                 } else {
                     Toast.makeText(GameActivity.this,"Waiting for player answer",Toast.LENGTH_SHORT);
+                    countDownTimer_GameOnline.cancel();
+                    countDownTimer_GameOnline.start();
                     CreateNewGame();
                 }
             }
