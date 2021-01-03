@@ -152,7 +152,11 @@ public class GameActivity extends AppCompatActivity implements NetworkStateRecei
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                if(ModePlay==2){
+                    LeaveRoom();
+                }
+                Intent intent = new Intent(GameActivity.this,MainActivity.class);
+                startActivity(intent);
             }
         });
         if (ModePlay == 2) {
